@@ -2,18 +2,32 @@
 " Load pathogn
 execute pathogen#infect()
 
+set encoding=utf-8
+
 filetype on
 syntax on
 
 " visual
 colorscheme Tomorrow-Night
+syntax enable
+set background=dark
+colorscheme solarized
+"let g:solarized_termcolors=256
 set guifont=Menlo\ Regular:h18
-set colorcolumn=80
+set colorcolumn=100
 set number
 
+" handle tab
+nnoremap <leader>t :tabe<CR>
 " leader key is set to space
 let mapleader = "\<Space>"
 map <leader>s :source ~/.vimrc<CR>
+
+" make sure backspace works
+set backspace=start,eol,indent
+
+ "system clipboard
+set clipboard=unnamed
 
 " Keep more info in memory to speed things up:
 set hidden
@@ -35,16 +49,98 @@ set showmatch
 " remove whitespaces on save
 autocmd BufWritePre * :%s/\s\+$//e
 
+" Use the below highlight group when displaying bad whitespace is desired.
+highlight BadWhitespace ctermbg=red guibg=red
+
+" Display tabs at the beginning of a line in Python mode as bad.
+au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
+" Make trailing whitespace be flagged as bad.
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+
+" Wrap text after a certain number of characters
+au BufRead,BufNewFile *.py,*.pyw, set textwidth=100
+
+" Use UNIX (\n) line endings.
+au BufNewFile *.py,*.pyw,*.c,*.h set fileformat=unix
+
+autocmd FileType python nnoremap <buffer> <leader>r :exec 'w !python' shellescape(@%, 1)<cr>
 " better search
 " highlight search words
-set hlsearch
+set hlsearch!
 " esc to cancel search
-" nnoremap <silent> <Esc> :nohlsearch<Bar>:echo<CR>
+nnoremap <leader>/ :set hlsearch!<CR>
 
 " command-T config
 "set wildignore+=*.log,*.sql,*.cache
 "reload cache
 "noremap <Leader>r :CommandTFlush<CR>
+
+"vim splits
+set splitbelow
+set splitright
+
+
+"nerd tree config
+"Always open the tree when booting Vim, but don’t focus it:
+autocmd vimenter * NERDTree
+autocmd VimEnter * wincmd p
+
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+let g:nerdtree_tabs_open_on_console_startup=1
+
+
+" Hit the right arrow to open a node:
+let NERDTreeMapActivateNode='<right>'
+
+"Display hidden files
+let NERDTreeShowHidden=1
+"Toggle display of the tree with <Leader> + n
+nmap <leader>n :NERDTreeToggle<CR>
+
+"Locate the focused file in the tree with <Leader> + j
+nmap <leader>j :NERDTreeFind<CR>
+
+"Do not display some useless files in the tree:
+let NERDTreeIgnore=['\.DS_Store','\.swp']
+
+
+" auto complete features
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+" syntastic settings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+"python with virtualenv support
+py << EOF
+import os
+import sys
+if 'VIRTUAL_ENV' in os.environ:
+  project_base_dir = os.environ['VIRTUAL_ENV']
+  activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+  execfile(activate_this, dict(__file__=activate_this))
+EOF
+
+" Latex settings
+let g:Tex_BIBINPUTS = '~/Development/Papers/bibliography'
+let g:Tex_UseSimpleLabelSearch = 1
+let g:Tex_RememberCiteSearch = 1
+let g:tex_flavor='latex'
+
+autocmd FileType * exec("setlocal dictionary+=".$HOME."/.vim/dictionaries/".expand('<amatch>'))
+set completeopt=menuone,longest,preview
+set complete+=k
 
 " lightline config
 set laststatus=2
