@@ -137,7 +137,11 @@ let g:Tex_BIBINPUTS = '~/Development/Papers/bibliography'
 let g:Tex_UseSimpleLabelSearch = 1
 let g:Tex_RememberCiteSearch = 1
 let g:tex_flavor='latex'
-
+let g:tex_flavor='latex'
+let g:Tex_TreatMacViewerAsUNIX = 1
+let g:Tex_ExecuteUNIXViewerInForeground = 1
+let g:Tex_ViewRule_ps = 'open -a Preview'
+let g:Tex_ViewRule_pdf = 'open -a Preview'
 autocmd FileType * exec("setlocal dictionary+=".$HOME."/.vim/dictionaries/".expand('<amatch>'))
 set completeopt=menuone,longest,preview
 set complete+=k
