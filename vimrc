@@ -7,8 +7,11 @@ set encoding=utf-8
 filetype on
 syntax on
 
+:set mouse=a
+
 " visual
-colorscheme Tomorrow-Night
+set textwidth=100
+"colorscheme Tomorrow-Night
 syntax enable
 set background=dark
 colorscheme solarized
@@ -32,6 +35,10 @@ set clipboard=unnamed
 " Keep more info in memory to speed things up:
 set hidden
 set history=100
+
+"spell check
+autocmd BufRead COMMIT_EDITMSG setlocal spell spelllang=en_us
+autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us
 
 "  Basic indenting logic. Specific filetypes are in ~/.vimrc/ftplugin
 filetype plugin on
@@ -62,6 +69,8 @@ au BufRead,BufNewFile *.py,*.pyw, set textwidth=100
 
 " Use UNIX (\n) line endings.
 au BufNewFile *.py,*.pyw,*.c,*.h set fileformat=unix
+
+hi pythonSelf  ctermfg=68  guifg=#5f87d7 cterm=bold gui=bold
 
 autocmd FileType python nnoremap <buffer> <leader>r :exec 'w !python' shellescape(@%, 1)<cr>
 " better search
@@ -107,11 +116,11 @@ nmap <leader>j :NERDTreeFind<CR>
 "Do not display some useless files in the tree:
 let NERDTreeIgnore=['\.DS_Store','\.swp']
 
-
 " auto complete features
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
-
+let g:ycm_key_list_select_completion=[]
+let g:ycm_key_list_previous_completion=[]
 " syntastic settings
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -136,13 +145,16 @@ EOF
 let g:Tex_BIBINPUTS = '~/Development/Papers/bibliography'
 let g:Tex_UseSimpleLabelSearch = 1
 let g:Tex_RememberCiteSearch = 1
-let g:tex_flavor='latex'
-let g:tex_flavor='latex'
+"let g:tex_flavor='latex'
+let g:tex_flavor='pdflatex'
+let g:Tex_DefaultTargetFormat='pdf'
+let g:Tex_MultipleCompileFormats='pdf,bibtex,pdf,pdf'
+
 let g:Tex_TreatMacViewerAsUNIX = 1
 let g:Tex_ExecuteUNIXViewerInForeground = 1
 let g:Tex_ViewRule_ps = 'open -a Preview'
 let g:Tex_ViewRule_pdf = 'open -a Preview'
-autocmd FileType * exec("setlocal dictionary+=".$HOME."/.vim/dictionaries/".expand('<amatch>'))
+autocmd FileType tex exec("setlocal dictionary+=".$HOME."/.vim/dictionaries/".expand('<amatch>'))
 set completeopt=menuone,longest,preview
 set complete+=k
 
