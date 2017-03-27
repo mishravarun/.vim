@@ -11,6 +11,8 @@ syntax on
 
 " visual
 set textwidth=100
+command! -nargs=* Wrap set wrap linebreak nolist
+
 "colorscheme Tomorrow-Night
 syntax enable
 set background=dark
