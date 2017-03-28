@@ -10,7 +10,7 @@ syntax on
 :set mouse=a
 
 " visual
-set textwidth=100
+"set textwidth=100
 command! -nargs=* Wrap set wrap linebreak nolist
 
 "colorscheme Tomorrow-Night
@@ -132,6 +132,19 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+
+"TaskPaper Plugin Settings
+let g:task_paper_date_format = "%Y-%m-%dT%H:%M:%S%z"
+let g:task_paper_follow_move = 0
+
+"Add header info to new python files
+autocmd bufnewfile *.py 0r ~/.vim/header/python.template
+autocmd bufnewfile *.py exe "2," . 6 . "g/File name:.*/s//File name: " .expand("%")
+autocmd bufnewfile *.py exe "3," . 6 . "g/Date created:.*/s//Date created: " .strftime("%d-%m-%Y")
+autocmd Bufwritepre,filewritepre *.py execute "normal ma"
+autocmd Bufwritepre,filewritepre *.py exe "3," . 6 . "g/Date last modified:.*/s/Date last modified:.*/Date last modified: " .strftime("%c")
+autocmd bufwritepost,filewritepost *.py execute "normal `a"
+
 
 "python with virtualenv support
 py << EOF

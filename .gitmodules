@@ -37,6 +37,9 @@
 [submodule "bundle/ultisnips"]
 	path = bundle/ultisnips
 	url = https://github.com/SirVer/ultisnips
-[submodule "bundle/python-mode"]
-	path = bundle/python-mode
-	url = https://github.com/python-mode/python-mode
+[submodule "bundle/taskpaper.vim"]
+	path = bundle/taskpaper.vim
+	url = https://github.com/davidoc/taskpaper.vim.git
+[submodule "bundle/vim-easygrep"]
+	path = bundle/vim-easygrep
+	url = https://github.com/dkprice/vim-easygrep
