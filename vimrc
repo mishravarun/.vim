@@ -95,7 +95,6 @@ set splitright
 "Always open the tree when booting Vim, but don’t focus it:
 autocmd vimenter * NERDTree
 autocmd VimEnter * wincmd p
-
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
@@ -133,9 +132,10 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-"TaskPaper Plugin Settings
-let g:task_paper_date_format = "%Y-%m-%dT%H:%M:%S%z"
-let g:task_paper_follow_move = 0
+
+" Vim Note taking
+:let g:notes_directories = ['~/Google Drive/Notes']
+:let g:notes_suffix = '.txt'
 
 "Add header info to new python files
 autocmd bufnewfile *.py 0r ~/.vim/header/python.template
