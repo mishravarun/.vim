@@ -8,7 +8,6 @@ filetype on
 syntax on
 
 :set mouse=a
-
 " visual
 "set textwidth=100
 command! -nargs=* Wrap set wrap linebreak nolist
