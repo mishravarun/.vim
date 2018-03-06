@@ -73,7 +73,7 @@ au BufNewFile *.py,*.pyw,*.c,*.h set fileformat=unix
 
 hi pythonSelf  ctermfg=68  guifg=#5f87d7 cterm=bold gui=bold
 
-autocmd FileType python nnoremap <buffer> <leader>r :exec 'w !python' shellescape(@%, 1)<cr>
+autocmd FileType python nnoremap <buffer> <leader>r :<C-u>call SaveAndExecutePython()<CR>
 " better search
 " highlight search words
 set hlsearch!
@@ -104,6 +104,7 @@ let g:nerdtree_tabs_open_on_console_startup=1
 
 " Hit the right arrow to open a node:
 let NERDTreeMapActivateNode='<right>'
+let NERDTreeMapOpenInTab='<ENTER>'
 
 "Display hidden files
 let NERDTreeShowHidden=1
@@ -172,21 +173,77 @@ autocmd FileType tex exec("setlocal dictionary+=".$HOME."/.vim/dictionaries/".ex
 set completeopt=menuone,longest,preview
 set complete+=k
 
+
+function! SaveAndExecutePython()
+    " SOURCE [reusable window]: https://github.com/fatih/vim-go/blob/master/autoload/go/ui.vim
+
+    " save and reload the current file
+    silent execute "update | edit"
+
+    " get file path of current file
+    let s:current_buffer_file_path = expand("%")
+
+    let s:output_buffer_name = "Python"
+    let s:output_buffer_filetype = "output"
+
+    " reuse existing buffer window if it exists otherwise create a new one
+    if !exists("s:buf_nr") || !bufexists(s:buf_nr)
+        silent execute 'botright new ' . s:output_buffer_name
+        let s:buf_nr = bufnr('%')
+    elseif bufwinnr(s:buf_nr) == -1
+        silent execute 'botright new'
+        silent execute s:buf_nr . 'buffer'
+    elseif bufwinnr(s:buf_nr) != bufwinnr('%')
+        silent execute bufwinnr(s:buf_nr) . 'wincmd w'
+    endif
+
+    silent execute "setlocal filetype=" . s:output_buffer_filetype
+    setlocal bufhidden=delete
+    setlocal buftype=nofile
+    setlocal noswapfile
+    setlocal nobuflisted
+    setlocal winfixheight
+    setlocal cursorline " make it easy to distinguish
+    setlocal nonumber
+    setlocal norelativenumber
+    setlocal showbreak=""
+
+    " clear the buffer
+    setlocal noreadonly
+    setlocal modifiable
+    %delete _
+
+    " add the console output
+    silent execute ".!python " . shellescape(s:current_buffer_file_path, 1)
+
+    " resize window to content length
+    " Note: This is annoying because if you print a lot of lines then your code buffer is forced to a height of one line every time you run this function.
+    "       However without this line the buffer starts off as a default size and if you resize the buffer then it keeps that custom size after repeated runs of this function.
+    "       But if you close the output buffer then it returns to using the default size when its recreated
+    "execute 'resize' . line('$')
+
+    " make the buffer non modifiable
+    setlocal readonly
+    setlocal nomodifiable
+endfunction
+
+
 " lightline config
 set laststatus=2
 let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'fugitive', 'readonly', 'filename', 'modified' ] ]
+      \             [ 'fugitive', 'filename' ] ]
       \ },
       \ 'component_function': {
       \   'fugitive': 'LightlineFugitive',
       \   'readonly': 'LightlineReadonly',
-      \   'modified': 'LightlineModified'
+      \   'modified': 'LightlineModified',
+      \   'filename': 'LightlineFilename'
       \ },
-      \ 'separator': { 'left': '|', 'right': '|' },
-      \ 'subseparator': { 'left': '|', 'right': '|' }
+      \ 'separator': { 'left': '⮀', 'right': '⮂' },
+      \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
       \ }
 
 function! LightlineModified()
@@ -205,12 +262,23 @@ function! LightlineReadonly()
   if &filetype == "help"
     return ""
   elseif &readonly
-    return "RO"
+    return "⭤"
   else
     return ""
   endif
 endfunction
 
 function! LightlineFugitive()
-  return exists('*fugitive#head') ? fugitive#head() : ''
+  if exists("*fugitive#head")
+    let branch = fugitive#head()
+    return branch !=# '' ? '⭠ '.branch : ''
+  endif
+  return ''
+endfunction
+
+
+function! LightlineFilename()
+  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
+       \ ('' != expand('%:t') ? expand('%:t') : '[No Name]') .
+       \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
 endfunction
