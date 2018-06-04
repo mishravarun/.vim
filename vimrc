@@ -117,11 +117,6 @@ nmap <leader>j :NERDTreeFind<CR>
 "Do not display some useless files in the tree:
 let NERDTreeIgnore=['\.DS_Store','\.swp']
 
-" auto complete features
-let g:ycm_autoclose_preview_window_after_completion=1
-map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
-let g:ycm_key_list_select_completion=[]
-let g:ycm_key_list_previous_completion=[]
 " syntastic settings
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
